@@ -13,3 +13,4 @@ build
 tmp
 *~
 *.o
+Frameworks/MacRuby.framework

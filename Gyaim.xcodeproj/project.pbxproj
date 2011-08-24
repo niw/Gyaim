@@ -46,6 +46,7 @@
 		2BFA9DA710CDF852007972A1 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2BFA9DA510CDF852007972A1 /* MainMenu.xib */; };
 		4DE339F70D74FCDD00ADB6EE /* rb_main.rb in Resources */ = {isa = PBXBuildFile; fileRef = 4DE339F60D74FCDD00ADB6EE /* rb_main.rb */; };
 		4DE3BE140D8651D900ECA448 /* MacRuby.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DE3BE130D8651D900ECA448 /* MacRuby.framework */; };
+		545091E414047F3F009C8884 /* MacRuby.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4DE3BE130D8651D900ECA448 /* MacRuby.framework */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -68,6 +69,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				545091E414047F3F009C8884 /* MacRuby.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,7 +86,7 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		2BFA9DA610CDF852007972A1 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		4DE339F60D74FCDD00ADB6EE /* rb_main.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = rb_main.rb; sourceTree = "<group>"; };
-		4DE3BE130D8651D900ECA448 /* MacRuby.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MacRuby.framework; path = /Library/Frameworks/MacRuby.framework; sourceTree = "<absolute>"; };
+		4DE3BE130D8651D900ECA448 /* MacRuby.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MacRuby.framework; path = Frameworks/MacRuby.framework; sourceTree = SOURCE_ROOT; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Gyaim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gyaim.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE2F8D0A132ED116006FAB89 /* icon.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = icon.tiff; path = Resources/icon.tiff; sourceTree = "<group>"; };
@@ -215,9 +217,10 @@
 			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Gyaim" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
+				172754B4107597CF00D0347B /* CopyFiles */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
-				172754B4107597CF00D0347B /* CopyFiles */,
+				547AEADE14048CD50029E911 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -317,6 +320,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# The macruby_deploy command-line tool with the --embed argument will make sure the MacRuby framework will be embedded in your .app. Default options will be used. Pass the -h option to get more information.\nPATH=\"$PATH:/usr/local/bin\" macruby_deploy --embed \"$TARGET_BUILD_DIR/$PROJECT_NAME.app\"";
+		};
+		547AEADE14048CD50029E911 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "CURRENT_FRAMEWORK_PATH=$(otool -L \"${TARGET_BUILD_DIR}/${EXECUTABLE_PATH}\"|grep MacRuby.framework|awk '{print $1}')\n\n# Fix install path\ninstall_name_tool -change \\\n  \"${CURRENT_FRAMEWORK_PATH}\" \\\n  \"@executable_path/../Frameworks/MacRuby.framework/Versions/Current/usr/lib/libmacruby.dylib\" \\\n  \"${TARGET_BUILD_DIR}/${EXECUTABLE_PATH}\"\n\n# Fix identification name\ninstall_name_tool -id \\\n  \"@executable_path/../Frameworks/MacRuby.framework/Versions/Current/usr/lib/libmacruby.dylib\" \\\n  \"${TARGET_BUILD_DIR}/${EXECUTABLE_PATH}\"";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -418,10 +435,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/build/Debug\"",
-				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -439,10 +452,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/build/Debug\"",
-				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = Info.plist;
@@ -457,6 +466,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1 = x86_64;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/Frameworks";
 				GCC_ENABLE_OBJC_GC = required;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -471,6 +481,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1 = x86_64;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/Frameworks";
 				GCC_ENABLE_OBJC_GC = required;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
