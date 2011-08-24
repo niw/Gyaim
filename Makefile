@@ -17,10 +17,11 @@ large: largedict dictcache buildandinstall
 xcodebuild:
 	xcodebuild -target Gyaim -configuration Debug
 install:
-	cp -r build/Debug/Gyaim.app ~/Library/Input\ Methods
+	rm -f ~/Library/Input\ Methods/Gyaim.app
+	ln -s `pwd`/build/Debug/Gyaim.app ~/Library/Input\ Methods
 dictcache:
-	ruby -e 'require "WordSearch/WordSearch"; DictCache.createCache("Resources/dict.txt");'
-#	ruby -e 'require "WordSearch/WordSearch"; ws = WordSearch.new("Resources/dict.txt"); ws.createDictCache;'
+	/usr/bin/ruby -e 'require "WordSearch/WordSearch"; DictCache.createCache("Resources/dict.txt");'
+#	/usr/bin/ruby -e 'require "WordSearch/WordSearch"; ws = WordSearch.new("Resources/dict.txt"); ws.createDictCache;'
 
 #
 # 富豪辞書を利用
